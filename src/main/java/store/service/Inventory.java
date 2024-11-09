@@ -20,4 +20,29 @@ public class Inventory {
         }
         return matchedProducts;
     }
+
+    public void displayProducts() {
+        for (Product product : products) {
+            String stockInfo;
+            String promotionInfo;
+
+            if (product.getStock() > 0) {
+                stockInfo = product.getStock() + "개";
+            } else {
+                stockInfo = "재고 없음";
+            }
+
+            if (product.hasPromotion()) {
+                promotionInfo = product.getPromotion().getName();
+            } else {
+                promotionInfo = "";
+            }
+            System.out.printf("- %s %d원 %s %s%n",
+                    product.getName(),
+                    product.getPrice(),
+                    stockInfo,
+                    promotionInfo);
+        }
+        System.out.println();
+    }
 }

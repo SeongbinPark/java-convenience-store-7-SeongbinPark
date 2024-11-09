@@ -28,4 +28,8 @@ public class Product {
     public Promotion getPromotion() {
         return promotion;
     }
+
+    public boolean hasPromotion() {
+        return promotion != null && promotion.isActive();
+    }
 }

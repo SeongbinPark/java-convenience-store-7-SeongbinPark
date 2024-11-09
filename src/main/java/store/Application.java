@@ -26,6 +26,9 @@ public class Application {
         while (continueShopping) {
 
             outputView.printWelcomeMessage();
+            outputView.printInventoryListMessage();
+
+            inventory.displayProducts();
 
             outputView.printThankYouMessage();
             continueShopping = inputView.readYesOrNo();
