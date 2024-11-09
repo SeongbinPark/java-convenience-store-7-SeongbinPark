@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import store.model.OrderItem;
 import store.model.Product;
+import store.model.Promotion;
 import store.service.Inventory;
 
 public class InputView {
@@ -54,6 +55,15 @@ public class InputView {
             final List<Product> matchedProducts = inventory.getProductsByName(productName);
             if (matchedProducts.isEmpty()) {
                 throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요.");
+            }
+
+            // 프로모션 재고, 일반 재고가 둘 다 있는 상품의 경우 프로모션 재고가 리스트의 앞에 있음
+            Product product = matchedProducts.getFirst();
+            Promotion promotion = product.getPromotion();
+
+            // 프로모션이 있는 경우
+            if (promotion != null && promotion.isActive()) {
+
             }
 
 
