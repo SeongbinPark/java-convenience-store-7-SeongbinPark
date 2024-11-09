@@ -5,6 +5,7 @@ import static camp.nextstep.edu.missionutils.Console.readLine;
 import java.util.ArrayList;
 import java.util.List;
 import store.model.OrderItem;
+import store.model.Product;
 import store.service.Inventory;
 
 public class InputView {
@@ -47,6 +48,12 @@ public class InputView {
                 }
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("[ERROR] 수량은 양의 정수여야 합니다. 다시 입력해 주세요.");
+            }
+
+            // 인벤토리에 그 상품명이 있나 확인 (프로모션상품, 일반상품 모두)
+            final List<Product> matchedProducts = inventory.getProductsByName(productName);
+            if (matchedProducts.isEmpty()) {
+                throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요.");
             }
 
 
