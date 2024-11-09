@@ -30,7 +30,7 @@ public class Application {
 
             inventory.displayProducts();
 
-            // 구매하려는  입력
+            // 구매할 품목 및 개수를 입력
             String input = inputView.readItemInput();
 
             // 마지막 부분
