@@ -59,13 +59,24 @@ public class InputView {
 
             // 프로모션 재고, 일반 재고가 둘 다 있는 상품의 경우 프로모션 재고가 리스트의 앞에 있음
             Product product = matchedProducts.getFirst();
-            Promotion promotion = product.getPromotion();
+            Promotion promotion = product.getPromotion(); // 프로모션이 없는 경우 null
 
             // 프로모션이 있는 경우
             if (promotion != null && promotion.isActive()) {
+                int n = promotion.getBuyQuantity(); // n+1에서 n
+                int one = promotion.getGetQuantity(); // 항상 1
 
+                // 구매 수량이 프로모션을 적용할 정도로 충분한 경우
+                if (n > 0 && quantity >= n) {
+                    if (quantity == n) {
+                        // 현재 오렌지주스은(는) 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)
+                    }
+                    
+
+                }
             }
 
+            // 프로모션이 없는 경우
 
         }
 
