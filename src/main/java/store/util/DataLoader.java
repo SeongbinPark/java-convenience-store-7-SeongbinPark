@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import store.Product;
-import store.Promotion;
+import store.model.Product;
+import store.model.Promotion;
 
 public class DataLoader {
     public static List<Promotion> loadPromotions(String filePath) {
