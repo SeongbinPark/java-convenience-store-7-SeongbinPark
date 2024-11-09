@@ -30,8 +30,13 @@ public class Application {
 
             inventory.displayProducts();
 
+            // 구매하려는  입력
+            String input = inputView.readItemInput();
+
+            // 마지막 부분
             outputView.printThankYouMessage();
             continueShopping = inputView.readYesOrNo();
+
 
         }
 

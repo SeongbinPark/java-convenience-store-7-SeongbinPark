@@ -3,7 +3,10 @@ package store.view;
 import static camp.nextstep.edu.missionutils.Console.readLine;
 
 public class InputView {
-
+    public String readItemInput() {
+        return readLine();
+    }
+    
     public boolean readYesOrNo() {
         final String input = readLine().trim().toUpperCase();
         while (!input.equals("Y") && !input.equals("N")) {
