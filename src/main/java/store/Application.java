@@ -7,6 +7,8 @@ import java.util.List;
 import store.model.Product;
 import store.model.Promotion;
 import store.service.Inventory;
+import store.view.InputView;
+import store.view.OutputView;
 
 public class Application {
     public static void main(String[] args) {
@@ -16,5 +18,7 @@ public class Application {
 
         Inventory inventory = new Inventory(products);
 
+        InputView inputView = new InputView();
+        OutputView outputView = new OutputView();
     }
 }
