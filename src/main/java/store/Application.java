@@ -20,5 +20,16 @@ public class Application {
 
         InputView inputView = new InputView();
         OutputView outputView = new OutputView();
+
+        boolean continueShopping = true;
+
+        while (continueShopping) {
+
+            outputView.printThankYouMessage();
+            continueShopping = inputView.readYesOrNo();
+
+        }
+
+
     }
 }
