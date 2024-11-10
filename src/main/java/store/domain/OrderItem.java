@@ -1,4 +1,4 @@
-package store.model;
+package store.domain;
 
 public class OrderItem {
 }
