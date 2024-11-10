@@ -26,4 +26,26 @@ public class Receipt {
     public List<FreeItem> getFreeItems() {
         return new ArrayList<>(freeItems);
     }
+
+    public int getTotalQuantity() {
+        return orderItems.stream()
+                .mapToInt(OrderItem::quantity)
+                .sum();
+    }
+
+    public int getTotalAmount() {
+        return totalAmount;
+    }
+
+    public int getPromotionDiscount() {
+        return promotionDiscount;
+    }
+
+    public int getMembershipDiscount() {
+        return membershipDiscount;
+    }
+
+    public int getFinalAmount() {
+        return totalAmount - promotionDiscount - membershipDiscount;
+    }
 }
