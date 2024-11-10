@@ -33,4 +33,8 @@ public class Promotion {
     public boolean isValid(LocalDate date) {
         return !date.isBefore(startDate) && !date.isAfter(endDate);
     }
+
+    public int calculateFreeQuantity(int quantity) {
+        return (quantity / buyQuantity) * getFreeQuantity;
+    }
 }
