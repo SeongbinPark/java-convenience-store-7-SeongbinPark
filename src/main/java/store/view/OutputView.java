@@ -2,6 +2,8 @@
 package store.view;
 
 import java.util.List;
+import store.domain.FreeItem;
+import store.domain.OrderItem;
 import store.domain.Product;
 import store.domain.Receipt;
 
@@ -31,11 +33,34 @@ public class OutputView {
         }
         System.out.println();
     }
-    
+
     public void printReceipt(Receipt receipt) {
         StringBuilder sb = new StringBuilder();
         sb.append("\n===========W 편의점=============").append(LINE_SEPARATOR);
         sb.append(String.format("%-12s %4s %10s%n", "상품명", "수량", "금액")); // 제목의 너비 조정
+        for (OrderItem item : receipt.getOrderItems()) {
+            sb.append(String.format("%-12s %4d %,10d%n",
+                    item.product().getName(),
+                    item.quantity(),
+                    item.calculateTotalPrice()));
+        }
+
+        sb.append("===========증    정=============").append(LINE_SEPARATOR);
+        for (FreeItem item : receipt.getFreeItems()) {
+            sb.append(String.format("%-12s %4d%n",
+                    item.product().getName(),
+                    item.quantity()));
+        }
+
+        sb.append("==============================").append(LINE_SEPARATOR);
+        sb.append(String.format("%-12s %4d %,10d%n",
+                "총구매액", receipt.getTotalQuantity(), receipt.getTotalAmount()));
+        sb.append(String.format("%-12s %,14d%n",
+                "행사할인", -receipt.getPromotionDiscount()));
+        sb.append(String.format("%-12s %,14d%n",
+                "멤버십할인", -receipt.getMembershipDiscount()));
+        sb.append(String.format("%-12s %,14d%n",
+                "내실돈", receipt.getFinalAmount()));
 
         System.out.print(sb);
     }
