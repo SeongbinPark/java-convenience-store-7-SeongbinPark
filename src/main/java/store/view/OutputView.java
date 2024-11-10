@@ -15,4 +15,7 @@ public class OutputView {
         System.out.print(sb);
     }
 
+    public void printError(String message) {
+        System.out.println(message);
+    }
 }
