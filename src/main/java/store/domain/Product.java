@@ -40,4 +40,8 @@ public class Product {
         return promotionType;
     }
 
+    public boolean hasPromotion() {
+        return !promotionType.isEmpty() && !"null".equals(promotionType);
+    }
+
 }
