@@ -24,4 +24,18 @@ public class StoreService {
     public List<Product> getProducts() {
         return new ArrayList<>(products);
     }
+
+    private Product findPromotionProduct(String productName) {
+        return products.stream()
+                .filter(p -> p.getName().equals(productName) && p.hasPromotion())
+                .findFirst()
+                .orElse(null);
+    }
+
+    private Product findNormalProduct(String productName) {
+        return products.stream()
+                .filter(p -> p.getName().equals(productName) && !p.hasPromotion())
+                .findFirst()
+                .orElse(null);
+    }
 }
