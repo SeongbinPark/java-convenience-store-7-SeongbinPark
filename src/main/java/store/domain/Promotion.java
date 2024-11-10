@@ -29,4 +29,8 @@ public class Promotion {
     public int getFreeQuantity() {
         return getFreeQuantity;
     }
+
+    public boolean isValid(LocalDate date) {
+        return !date.isBefore(startDate) && !date.isAfter(endDate);
+    }
 }
