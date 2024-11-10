@@ -18,4 +18,12 @@ public class Receipt {
         this.promotionDiscount = promotionDiscount;
         this.membershipDiscount = membershipDiscount;
     }
+
+    public List<OrderItem> getOrderItems() {
+        return new ArrayList<>(orderItems);
+    }
+
+    public List<FreeItem> getFreeItems() {
+        return new ArrayList<>(freeItems);
+    }
 }
