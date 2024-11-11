@@ -17,6 +17,11 @@ public class OutputView {
         System.out.println();
     }
 
+    public void printWelcomeWithBlank() {
+        System.out.println();
+        printWelcome();
+    }
+
     public void printProducts(final List<Product> products) {
         for (final Product product : products) {
             String promotionType = getPromotionTypeString(product);
