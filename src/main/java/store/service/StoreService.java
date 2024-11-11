@@ -5,9 +5,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import store.domain.Cart;
+import store.domain.FreeItem;
+import store.domain.OrderItem;
 import store.domain.OrderRequest;
 import store.domain.Product;
 import store.domain.Promotion;
+import store.domain.Receipt;
 import store.view.InputView;
 
 public class StoreService {
@@ -149,5 +152,50 @@ public class StoreService {
         int useFromPromotion = Math.min(quantity, availablePromotionStock);
         promotionProduct.processOrder(useFromPromotion, useFromPromotion);
         return useFromPromotion;
+    }
+
+    public Receipt generateReceipt(boolean useMembership) {
+        int totalAmount = calculateTotalAmount();
+        int promotionDiscount = calculatePromotionDiscount();
+        int membershipDiscount = calculateMembershipDiscount(totalAmount, promotionDiscount, useMembership);
+
+        return new Receipt(
+                cart.getOrderItems(),
+                cart.getFreeItems(),
+                totalAmount,
+                promotionDiscount,
+                membershipDiscount
+        );
+    }
+
+    private int calculateTotalAmount() {
+        return cart.getOrderItems().stream()
+                .mapToInt(OrderItem::calculateTotalPrice)
+                .sum();
+    }
+
+    private int calculatePromotionDiscount() {
+        // 증정품 개수만큼만 할인 (각 증정품의 가격 합)
+        return cart.getFreeItems().stream()
+                .mapToInt(item -> item.product().getPrice() * item.quantity())
+                .sum();
+    }
+
+    private int calculateMembershipDiscount(int totalAmount, int promotionDiscount, boolean useMembership) {
+        if (!useMembership) {
+            return 0;
+        }
+
+        int discountableAmount = totalAmount;
+        for (FreeItem freeItem : cart.getFreeItems()) {
+            Product product = freeItem.product();
+            Promotion promotion = promotionService.getPromotion(product.getPromotionType());
+            // 프로모션이 적용된 금액을 차감 (예: 2+1이면 3개 금액, 1+1이면 2개 금액) -> 2+1에서 6개면 두번 적용
+            discountableAmount -=
+                    (product.getPrice() * (promotion.getBuyQuantity() + promotion.getFreeQuantity())) * completeSets;
+        }
+
+        int discountAmount = (int) (Math.max(0, discountableAmount) * MEMBERSHIP_DISCOUNT_RATE);
+        return Math.min(discountAmount, MAX_MEMBERSHIP_DISCOUNT);
     }
 }
