@@ -22,6 +22,7 @@ public class InputView {
         System.out.println();
         System.out.printf(InputMessages.NORMAL_PRICE_CONFIRMATION_MESSAGE_TEMPLATE.getMessage(),
                 product.getName(), quantity);
+        System.out.println();
         return readYesNo();
     }
 
