@@ -48,4 +48,20 @@ public class Product {
         return !promotionType.isEmpty() && !"null".equals(promotionType);
     }
 
+    public void processOrder(int quantity, int promotionQuantity) {
+        if (quantity > getTotalStock()) {
+            throw new IllegalArgumentException(
+                    String.format("[ERROR] 재고가 부족합니다. 현재 총 재고: %d개", getTotalStock()));
+        }
+
+        // 무조건 프로모션 재고 먼저 사용
+        int fromPromotion = Math.min(promotionStock, quantity);
+        promotionStock -= fromPromotion;
+
+        // 부족한 만큼만 일반 재고 사용
+        int remainingQuantity = quantity - fromPromotion;
+        if (remainingQuantity > 0) {
+            normalStock -= remainingQuantity;
+        }
+    }
 }
