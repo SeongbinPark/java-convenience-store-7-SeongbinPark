@@ -57,19 +57,21 @@ public class FileLoader {
 
     private static List<Promotion> parsePromotions(final List<String> lines) {
         final List<Promotion> promotions = new ArrayList<>();
+        parsePromotionLine(lines, promotions);
+        return promotions;
+    }
+
+    private static void parsePromotionLine(List<String> lines, List<Promotion> promotions) {
         for (final String line : lines) {
             final String[] columns = line.split(COLUMN_DELIMITER);
             validatePromotionColumns(columns);
-
             final String name = columns[0];
             final int buyQuantity = Integer.parseInt(columns[1]);
             final int getFreeQuantity = Integer.parseInt(columns[2]);
             final LocalDate startDate = LocalDate.parse(columns[3]);
             final LocalDate endDate = LocalDate.parse(columns[4]);
-
             promotions.add(new Promotion(name, buyQuantity, getFreeQuantity, startDate, endDate));
         }
-        return promotions;
     }
 
     private static void validateProductColumns(final String[] columns) {
