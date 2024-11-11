@@ -1,9 +1,10 @@
 package store.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,25 +13,45 @@ import store.domain.Product;
 import store.domain.Promotion;
 
 public class FileLoader {
-    private static final Path PRODUCTS_PATH = Paths.get("src/main/resources/products.md");
-    private static final Path PROMOTIONS_PATH = Paths.get("src/main/resources/promotions.md");
+    private static final String PRODUCTS_FILE = "products.md";
+    private static final String PROMOTIONS_FILE = "promotions.md";
     private static final String COLUMN_DELIMITER = ",";
     private static final String NULL_STRING = "null";
 
     public static List<Product> loadProducts() {
-        try {
-            final List<String> lines = Files.readAllLines(PRODUCTS_PATH);
+        try (InputStream is = FileLoader.class.getClassLoader().getResourceAsStream(PRODUCTS_FILE);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+            if (is == null) {
+                throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PRODUCTS.getMessage());
+            }
+
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
             return parseProducts(lines.subList(1, lines.size())); // Skip header
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PRODUCTS.getMessage(), e);
         }
     }
 
     public static List<Promotion> loadPromotions() {
-        try {
-            final List<String> lines = Files.readAllLines(PROMOTIONS_PATH);
+        try (InputStream is = FileLoader.class.getClassLoader().getResourceAsStream(PROMOTIONS_FILE);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+
+            if (is == null) {
+                throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PROMOTIONS.getMessage());
+            }
+
+            List<String> lines = new ArrayList<>();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
             return parsePromotions(lines.subList(1, lines.size())); // Skip header
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PROMOTIONS.getMessage(), e);
         }
     }
