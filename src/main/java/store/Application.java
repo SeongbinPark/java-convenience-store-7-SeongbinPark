@@ -34,18 +34,22 @@ public class Application {
         boolean continueShopping = true;
         int cycleCount = 0;
         while (continueShopping) {
-            if (cycleCount == 0) {
-                outputView.printWelcome();
-            }
-            if (cycleCount > 0) {
-                outputView.printWelcome2();
-            }
+            printWelcome(cycleCount);
 
             outputView.printProducts(storeService.getProducts());
 
             processOrder();
             continueShopping = checkContinueShopping();
             cycleCount++;
+        }
+    }
+
+    private void printWelcome(int cycleCount) {
+        if (cycleCount == 0) {
+            outputView.printWelcome();
+        }
+        if (cycleCount > 0) {
+            outputView.printWelcomeWithBlank();
         }
     }
 
