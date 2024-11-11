@@ -43,12 +43,10 @@ public class StoreService {
     }
 
     private Product findNormalProduct(final String productName) {
-        for (Product product : products) {
-            if (product.getName().equals(productName) && !product.hasPromotion()) {
-                return product;
-            }
-        }
-        return null;
+        return products.stream()
+                .filter(p -> p.getName().equals(productName) && !p.hasPromotion())
+                .findFirst()
+                .orElse(null);
     }
 
     public void processOrder(final String orderInput, final InputView inputView) {
@@ -218,12 +216,10 @@ public class StoreService {
     }
 
     private Product findProduct(final String name) {
-        for (Product product : products) {
-            if (product.getName().equals(name)) {
-                return product;
-            }
-        }
-        throw new IllegalArgumentException(ErrorMessages.PRODUCT_NOT_FOUND.getMessage());
+        return products.stream()
+                .filter(p -> p.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.PRODUCT_NOT_FOUND.getMessage()));
     }
 
     public Receipt generateReceipt(final boolean useMembership) {
