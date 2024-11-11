@@ -51,19 +51,21 @@ public class Product {
     }
 
     public void processOrder(final int quantity, final int promotionQuantity) {
+        ensureSufficientStock(quantity);
+
+        final int fromPromotion = Math.min(promotionStock, quantity); // 무조건 프로모션 재고 먼저 사용
+        promotionStock -= fromPromotion;
+
+        final int remainingQuantity = quantity - fromPromotion; // 부족한 만큼만 일반 재고 사용
+        if (remainingQuantity > 0) {
+            normalStock -= remainingQuantity;
+        }
+    }
+
+    private void ensureSufficientStock(int quantity) {
         if (quantity > getTotalStock()) {
             throw new IllegalArgumentException(
                     String.format(ErrorMessages.INSUFFICIENT_STOCK.getMessage(), getTotalStock()));
-        }
-
-        // 무조건 프로모션 재고 먼저 사용
-        final int fromPromotion = Math.min(promotionStock, quantity);
-        promotionStock -= fromPromotion;
-
-        // 부족한 만큼만 일반 재고 사용
-        final int remainingQuantity = quantity - fromPromotion;
-        if (remainingQuantity > 0) {
-            normalStock -= remainingQuantity;
         }
     }
 }
