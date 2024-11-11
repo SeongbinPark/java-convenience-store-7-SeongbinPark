@@ -26,13 +26,12 @@ public class OutputView {
         System.out.println();
     }
 
-    private static void printUnavailableProduct(Product product, String promotionType) {
-        if (product.getTotalStock() <= 0) {
-            System.out.printf(OutputMessages.PRODUCT_UNAVAILABLE.getMessage(),
-                    product.getName(),
-                    product.getPrice(),
-                    promotionType);
+    private static String getPromotionTypeString(Product product) {
+        String promotionType = "";
+        if (product.hasPromotion()) {
+            promotionType = " " + product.getPromotionType();
         }
+        return promotionType;
     }
 
     private static void printAvailableProduct(Product product, String promotionType) {
@@ -45,12 +44,13 @@ public class OutputView {
         }
     }
 
-    private static String getPromotionTypeString(Product product) {
-        String promotionType = "";
-        if (product.hasPromotion()) {
-            promotionType = " " + product.getPromotionType();
+    private static void printUnavailableProduct(Product product, String promotionType) {
+        if (product.getTotalStock() <= 0) {
+            System.out.printf(OutputMessages.PRODUCT_UNAVAILABLE.getMessage(),
+                    product.getName(),
+                    product.getPrice(),
+                    promotionType);
         }
-        return promotionType;
     }
 
     public void printReceipt(final Receipt receipt) {
@@ -60,31 +60,14 @@ public class OutputView {
         appendFreeItems(receipt, sb);
         appendTotalSectionHeader(sb);
         appendTotal(receipt, sb);
+
         System.out.print(sb);
     }
 
-    private static void appendTotal(Receipt receipt, StringBuilder sb) {
-        sb.append(String.format("%-12s %4d %,10d%n",
-                OutputMessages.TOTAL_PURCHASE.getMessage(), receipt.getTotalQuantity(), receipt.getTotalAmount()));
-        sb.append(String.format("%-12s %,14d%n",
-                OutputMessages.PROMOTION_DISCOUNT.getMessage(), -receipt.getPromotionDiscount()));
-        sb.append(String.format("%-12s %,14d%n",
-                OutputMessages.MEMBERSHIP_DISCOUNT.getMessage(), -receipt.getMembershipDiscount()));
-        sb.append(String.format("%-12s %,14d%n",
-                OutputMessages.FINAL_AMOUNT.getMessage(), receipt.getFinalAmount()));
-    }
-
-    private static void appendTotalSectionHeader(StringBuilder sb) {
-        sb.append(OutputMessages.RECEIPT_SECTION_TOTAL.getMessage()).append(LINE_SEPARATOR);
-    }
-
-    private static void appendFreeItems(Receipt receipt, StringBuilder sb) {
-        sb.append(OutputMessages.RECEIPT_SECTION_FREE_ITEMS.getMessage()).append(LINE_SEPARATOR);
-        for (final FreeItem item : receipt.getFreeItems()) {
-            sb.append(String.format("%-12s %4d%n",
-                    item.product().getName(),
-                    item.quantity()));
-        }
+    private static void appendProductHeader(StringBuilder sb) {
+        sb.append(OutputMessages.RECEIPT_HEADER.getMessage()).append(LINE_SEPARATOR);
+        sb.append(String.format(OutputMessages.RECEIPT_PRODUCT_HEADER.getMessage(),
+                "상품명", "수량", "금액")).append(LINE_SEPARATOR); // 제목의 너비 조정
     }
 
     private static void appendOrderItems(Receipt receipt, StringBuilder sb) {
@@ -96,10 +79,28 @@ public class OutputView {
         }
     }
 
-    private static void appendProductHeader(StringBuilder sb) {
-        sb.append(OutputMessages.RECEIPT_HEADER.getMessage()).append(LINE_SEPARATOR);
-        sb.append(String.format(OutputMessages.RECEIPT_PRODUCT_HEADER.getMessage(),
-                "상품명", "수량", "금액")).append(LINE_SEPARATOR); // 제목의 너비 조정
+    private static void appendFreeItems(Receipt receipt, StringBuilder sb) {
+        sb.append(OutputMessages.RECEIPT_SECTION_FREE_ITEMS.getMessage()).append(LINE_SEPARATOR);
+        for (final FreeItem item : receipt.getFreeItems()) {
+            sb.append(String.format("%-12s %4d%n",
+                    item.product().getName(),
+                    item.quantity()));
+        }
+    }
+
+    private static void appendTotalSectionHeader(StringBuilder sb) {
+        sb.append(OutputMessages.RECEIPT_SECTION_TOTAL.getMessage()).append(LINE_SEPARATOR);
+    }
+
+    private static void appendTotal(Receipt receipt, StringBuilder sb) {
+        sb.append(String.format("%-12s %4d %,10d%n",
+                OutputMessages.TOTAL_PURCHASE.getMessage(), receipt.getTotalQuantity(), receipt.getTotalAmount()));
+        sb.append(String.format("%-12s %,14d%n",
+                OutputMessages.PROMOTION_DISCOUNT.getMessage(), -receipt.getPromotionDiscount()));
+        sb.append(String.format("%-12s %,14d%n",
+                OutputMessages.MEMBERSHIP_DISCOUNT.getMessage(), -receipt.getMembershipDiscount()));
+        sb.append(String.format("%-12s %,14d%n",
+                OutputMessages.FINAL_AMOUNT.getMessage(), receipt.getFinalAmount()));
     }
 
     public void printError(final String message) {
