@@ -15,7 +15,6 @@ public class Cart {
     public void addOrder(final Product product, final int quantity, final int promotionSets) {
         items.add(new OrderItem(product, quantity));
         if (promotionSets > 0) {
-            // promotionSets가 정확한 증정품 개수
             freeItems.add(new FreeItem(product, promotionSets));
         }
     }
