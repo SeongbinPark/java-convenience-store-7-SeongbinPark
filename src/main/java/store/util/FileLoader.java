@@ -37,22 +37,22 @@ public class FileLoader {
 
     private static List<Product> parseProducts(final List<String> lines) {
         final List<Product> products = new ArrayList<>();
+        createProductFromLine(lines, products);
+        return products;
+    }
+
+    private static void createProductFromLine(List<String> lines, List<Product> products) {
         for (final String line : lines) {
             final String[] columns = line.split(COLUMN_DELIMITER);
             validateProductColumns(columns);
-
             final String name = columns[0];
             final int price = Integer.parseInt(columns[1]);
             final int quantity = Integer.parseInt(columns[2]);
             final String promotionType = NULL_STRING.equals(columns[3]) ? "" : columns[3];
-
-            // promotionType이 있는 경우 프로모션 재고로, 없는 경우 일반 재고로 설정
             final int promotionStock = !promotionType.isEmpty() ? quantity : 0;
             final int normalStock = promotionType.isEmpty() ? quantity : 0;
-
             products.add(new Product(name, price, promotionStock, normalStock, promotionType));
         }
-        return products;
     }
 
     private static List<Promotion> parsePromotions(final List<String> lines) {

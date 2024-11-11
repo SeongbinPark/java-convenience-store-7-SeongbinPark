@@ -37,15 +37,21 @@ public class Application {
             outputView.printProducts(storeService.getProducts());
 
             processOrder();
-            while (true) {
-                try {
-                    continueShopping = inputView.readContinueShopping();
-                    break;
-                } catch (IllegalArgumentException e) {
-                    outputView.printError(e.getMessage());
-                }
+            continueShopping = checkContinueShopping();
+        }
+    }
+
+    private boolean checkContinueShopping() {
+        boolean continueShopping;
+        while (true) {
+            try {
+                continueShopping = inputView.readContinueShopping();
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printError(e.getMessage());
             }
         }
+        return continueShopping;
     }
 
     private void processOrder() {
@@ -64,6 +70,13 @@ public class Application {
         storeService.processOrder(orderInput, inputView);
 
         boolean useMembership;
+        useMembership = isUseMembership();
+        final Receipt receipt = storeService.generateReceipt(useMembership);
+        outputView.printReceipt(receipt);
+    }
+
+    private boolean isUseMembership() {
+        boolean useMembership;
         while (true) {
             try {
                 useMembership = inputView.readMembershipChoice();
@@ -72,7 +85,6 @@ public class Application {
                 outputView.printError(e.getMessage());
             }
         }
-        final Receipt receipt = storeService.generateReceipt(useMembership);
-        outputView.printReceipt(receipt);
+        return useMembership;
     }
 }

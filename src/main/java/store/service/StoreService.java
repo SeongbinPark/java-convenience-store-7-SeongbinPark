@@ -142,13 +142,28 @@ public class StoreService {
 
     private int offerAdditionalPromotion(Product promotionProduct, int quantity, InputView inputView, int buyQuantity,
                                          int availablePromotionStock) {
+        OutputView outputView = new OutputView();
         if (quantity == buyQuantity && availablePromotionStock >= buyQuantity) {
-            if (inputView.readPromotionAddition(promotionProduct)) {
+            boolean addOne = addOneMore(promotionProduct, inputView, outputView);
+            if (addOne) {
                 quantity = buyQuantity + 1;
                 completeSets = 1;
             }
         }
         return quantity;
+    }
+
+    private static boolean addOneMore(Product promotionProduct, InputView inputView, OutputView outputView) {
+        boolean addOne;
+        while (true) {
+            try {
+                addOne = inputView.readPromotionAddition(promotionProduct);
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printError(e.getMessage());
+            }
+        }
+        return addOne;
     }
 
     private void handleRemainingQuantity(Product promotionProduct, int remainingQuantity) {
@@ -166,22 +181,30 @@ public class StoreService {
         OutputView outputView = new OutputView();
         if (quantity > promotionQuantity + 1 && promotionQuantity > 0) {
             final int nonPromotionQuantity = quantity - promotionQuantity;
-            boolean isNormalPriceConfirmation;
-            while (true) {
-                try {
-                    isNormalPriceConfirmation = inputView.readNormalPriceConfirmation(promotionProduct,
-                            nonPromotionQuantity);
-                    break;
-                } catch (IllegalArgumentException e) {
-                    outputView.printError(e.getMessage());
-                }
-            }
+            boolean isNormalPriceConfirmation = getIsNormalPriceConfirmation(promotionProduct, inputView,
+                    nonPromotionQuantity,
+                    outputView);
             if (!isNormalPriceConfirmation) {
                 processPromotionRejection(promotionProduct, quantity, promotionQuantity, availablePromotionStock);
                 return true;
             }
         }
         return false;
+    }
+
+    private static boolean getIsNormalPriceConfirmation(Product promotionProduct, InputView inputView,
+                                                        int nonPromotionQuantity, OutputView outputView) {
+        boolean isNormalPriceConfirmation;
+        while (true) {
+            try {
+                isNormalPriceConfirmation = inputView.readNormalPriceConfirmation(promotionProduct,
+                        nonPromotionQuantity);
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printError(e.getMessage());
+            }
+        }
+        return isNormalPriceConfirmation;
     }
 
     private void processPromotionRejection(Product promotionProduct, int quantity, int promotionQuantity,
