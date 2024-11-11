@@ -1,4 +1,3 @@
-// src/main/java/store/domain/Product.java
 package store.domain;
 
 public class Product {
@@ -8,7 +7,8 @@ public class Product {
     private int normalStock;
     private final String promotionType;
 
-    public Product(String name, int price, int promotionStock, int normalStock, String promotionType) {
+    public Product(final String name, final int price, final int promotionStock, final int normalStock,
+                   final String promotionType) {
         this.name = name;
         this.price = price;
         this.promotionStock = promotionStock;
@@ -40,7 +40,7 @@ public class Product {
         return promotionType;
     }
 
-    public void setPromotionStock(int price) {
+    public void setPromotionStock(final int price) {
         promotionStock = price;
     }
 
@@ -48,18 +48,18 @@ public class Product {
         return !promotionType.isEmpty() && !"null".equals(promotionType);
     }
 
-    public void processOrder(int quantity, int promotionQuantity) {
+    public void processOrder(final int quantity, final int promotionQuantity) {
         if (quantity > getTotalStock()) {
             throw new IllegalArgumentException(
                     String.format("[ERROR] 재고가 부족합니다. 현재 총 재고: %d개", getTotalStock()));
         }
 
         // 무조건 프로모션 재고 먼저 사용
-        int fromPromotion = Math.min(promotionStock, quantity);
+        final int fromPromotion = Math.min(promotionStock, quantity);
         promotionStock -= fromPromotion;
 
         // 부족한 만큼만 일반 재고 사용
-        int remainingQuantity = quantity - fromPromotion;
+        final int remainingQuantity = quantity - fromPromotion;
         if (remainingQuantity > 0) {
             normalStock -= remainingQuantity;
         }

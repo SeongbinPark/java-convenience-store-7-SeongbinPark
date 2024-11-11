@@ -11,16 +11,16 @@ public class PromotionService {
 
     private final Map<String, Promotion> promotions;
 
-    public PromotionService(List<Promotion> promotions) {
+    public PromotionService(final List<Promotion> promotions) {
         this.promotions = promotions.stream()
                 .collect(Collectors.toMap(Promotion::getName, p -> p));
     }
 
-    public Promotion getPromotion(String promotionType) {
+    public Promotion getPromotion(final String promotionType) {
         return promotions.get(promotionType);
     }
 
-    public boolean canApplyPromotion(Product product) {
+    public boolean canApplyPromotion(final Product product) {
         return product.hasPromotion() &&
                 promotions.containsKey(product.getPromotionType()) &&
                 promotions.get(product.getPromotionType())

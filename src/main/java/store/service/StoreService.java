@@ -1,4 +1,3 @@
-// src/main/java/store/service/StoreService.java
 package store.service;
 
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ public class StoreService {
     private final Cart cart;
     private int completeSets = 0;
 
-    public StoreService(List<Product> products, PromotionService promotionService) {
+    public StoreService(final List<Product> products, final PromotionService promotionService) {
         this.products = new ArrayList<>(products);
         this.promotionService = promotionService;
         this.cart = new Cart();
@@ -34,43 +33,43 @@ public class StoreService {
         return new ArrayList<>(products);
     }
 
-    private int getTotalStockForProduct(String productName) {
+    private int getTotalStockForProduct(final String productName) {
         return products.stream()
                 .filter(p -> p.getName().equals(productName))
                 .mapToInt(p -> p.getPromotionStock() + p.getNormalStock())
                 .sum();
     }
 
-    private Product findPromotionProduct(String productName) {
+    private Product findPromotionProduct(final String productName) {
         return products.stream()
                 .filter(p -> p.getName().equals(productName) && p.hasPromotion())
                 .findFirst()
                 .orElse(null);
     }
 
-    private Product findNormalProduct(String productName) {
+    private Product findNormalProduct(final String productName) {
         return products.stream()
                 .filter(p -> p.getName().equals(productName) && !p.hasPromotion())
                 .findFirst()
                 .orElse(null);
     }
 
-    public void processOrder(String orderInput, InputView inputView) {
+    public void processOrder(final String orderInput, final InputView inputView) {
         cart.clear();
-        List<OrderRequest> requests = parseOrder(orderInput);
+        final List<OrderRequest> requests = parseOrder(orderInput);
 
-        for (OrderRequest request : requests) {
+        for (final OrderRequest request : requests) {
             processOrderRequest(request, inputView);
         }
     }
 
-    private List<OrderRequest> parseOrder(String input) {
-        List<OrderRequest> requests = new ArrayList<>();
-        Matcher matcher = ORDER_PATTERN.matcher(input);
+    private List<OrderRequest> parseOrder(final String input) {
+        final List<OrderRequest> requests = new ArrayList<>();
+        final Matcher matcher = ORDER_PATTERN.matcher(input);
 
         while (matcher.find()) {
-            String productName = matcher.group(1);
-            int quantity = Integer.parseInt(matcher.group(2));
+            final String productName = matcher.group(1);
+            final int quantity = Integer.parseInt(matcher.group(2));
             requests.add(new OrderRequest(productName, quantity));
         }
 
@@ -80,8 +79,8 @@ public class StoreService {
         return requests;
     }
 
-    private void processOrderRequest(OrderRequest request, InputView inputView) {
-        Product product = findProduct(request.productName());
+    private void processOrderRequest(final OrderRequest request, final InputView inputView) {
+        final Product product = findProduct(request.productName());
         int quantity = request.quantity();
 
         if (quantity <= 0) {
@@ -100,15 +99,15 @@ public class StoreService {
         }
     }
 
-    private void handlePromotionPurchase(Product promotionProduct, int quantity, InputView inputView) {
-        Promotion promotion = promotionService.getPromotion(promotionProduct.getPromotionType());
-        int buyQuantity = promotion.getBuyQuantity();
-        int availablePromotionStock = promotionProduct.getPromotionStock();
+    private void handlePromotionPurchase(final Product promotionProduct, int quantity, final InputView inputView) {
+        final Promotion promotion = promotionService.getPromotion(promotionProduct.getPromotionType());
+        final int buyQuantity = promotion.getBuyQuantity();
+        final int availablePromotionStock = promotionProduct.getPromotionStock();
 
         // 프로모션 적용 가능한 세트 수 계산
         completeSets = Math.min(availablePromotionStock, quantity) / (buyQuantity + 1);
 
-        int promotionQuantity = completeSets * (buyQuantity + 1);
+        final int promotionQuantity = completeSets * (buyQuantity + 1);
         // 구매 수량이 정확히 n개(2+1의 경우 2개)일 때만 추가 구매 제안
         if (quantity == buyQuantity && availablePromotionStock >= buyQuantity) {
             if (inputView.readPromotionAddition(promotionProduct)) {
@@ -118,7 +117,7 @@ public class StoreService {
         }
         // n의 배수보다 큰 수량을 구매하고, 프로모션 적용이 일부만 가능한 경우에만 메시지 출력
         else if (quantity > promotionQuantity + 1 && promotionQuantity > 0) {
-            int nonPromotionQuantity = quantity - promotionQuantity;
+            final int nonPromotionQuantity = quantity - promotionQuantity;
             if (!inputView.readNormalPriceConfirmation(promotionProduct, nonPromotionQuantity)) {
                 promotionProduct.setPromotionStock(promotionQuantity);
                 cart.addOrder(promotionProduct, promotionProduct.getPromotionStock(), completeSets);
@@ -131,43 +130,43 @@ public class StoreService {
         }
 
         // 재고 차감 (무조건 프로모션 재고 우선 사용)
-        int useFromPromotion = reducePromotionStock(promotionProduct, quantity, availablePromotionStock);
+        final int useFromPromotion = reducePromotionStock(promotionProduct, quantity, availablePromotionStock);
 
         // 부족한 수량은 일반 재고에서 처리
-        int remainingQuantity = quantity - useFromPromotion;
+        final int remainingQuantity = quantity - useFromPromotion;
         if (remainingQuantity > 0) {
-            Product normalProduct = findNormalProduct(promotionProduct.getName());
+            final Product normalProduct = findNormalProduct(promotionProduct.getName());
             if (normalProduct != null) {
                 normalProduct.processOrder(remainingQuantity, 0);
             }
         }
-
         cart.addOrder(promotionProduct, quantity, completeSets);
     }
 
-    private static int reducePromotionStock(Product promotionProduct, int quantity, int availablePromotionStock) {
-        int useFromPromotion = Math.min(quantity, availablePromotionStock);
+    private static int reducePromotionStock(final Product promotionProduct, final int quantity,
+                                            final int availablePromotionStock) {
+        final int useFromPromotion = Math.min(quantity, availablePromotionStock);
         promotionProduct.processOrder(useFromPromotion, useFromPromotion);
         return useFromPromotion;
     }
 
 
-    private void handleNormalPurchase(Product product, int quantity) {
+    private void handleNormalPurchase(final Product product, final int quantity) {
         product.processOrder(quantity, 0);
         cart.addOrder(product, quantity, 0);
     }
 
-    private Product findProduct(String name) {
+    private Product findProduct(final String name) {
         return products.stream()
                 .filter(p -> p.getName().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다."));
     }
 
-    public Receipt generateReceipt(boolean useMembership) {
-        int totalAmount = calculateTotalAmount();
-        int promotionDiscount = calculatePromotionDiscount();
-        int membershipDiscount = calculateMembershipDiscount(totalAmount, promotionDiscount, useMembership);
+    public Receipt generateReceipt(final boolean useMembership) {
+        final int totalAmount = calculateTotalAmount();
+        final int promotionDiscount = calculatePromotionDiscount();
+        final int membershipDiscount = calculateMembershipDiscount(totalAmount, promotionDiscount, useMembership);
 
         return new Receipt(
                 cart.getOrderItems(),
@@ -191,21 +190,22 @@ public class StoreService {
                 .sum();
     }
 
-    private int calculateMembershipDiscount(int totalAmount, int promotionDiscount, boolean useMembership) {
+    private int calculateMembershipDiscount(final int totalAmount, final int promotionDiscount,
+                                            final boolean useMembership) {
         if (!useMembership) {
             return 0;
         }
 
         int discountableAmount = totalAmount;
-        for (FreeItem freeItem : cart.getFreeItems()) {
-            Product product = freeItem.product();
-            Promotion promotion = promotionService.getPromotion(product.getPromotionType());
+        for (final FreeItem freeItem : cart.getFreeItems()) {
+            final Product product = freeItem.product();
+            final Promotion promotion = promotionService.getPromotion(product.getPromotionType());
             // 프로모션이 적용된 금액을 차감 (예: 2+1이면 3개 금액, 1+1이면 2개 금액) -> 2+1에서 6개면 두번 적용
             discountableAmount -=
                     (product.getPrice() * (promotion.getBuyQuantity() + promotion.getFreeQuantity())) * completeSets;
         }
 
-        int discountAmount = (int) (Math.max(0, discountableAmount) * MEMBERSHIP_DISCOUNT_RATE);
+        final int discountAmount = (int) (Math.max(0, discountableAmount) * MEMBERSHIP_DISCOUNT_RATE);
         return Math.min(discountAmount, MAX_MEMBERSHIP_DISCOUNT);
     }
 }

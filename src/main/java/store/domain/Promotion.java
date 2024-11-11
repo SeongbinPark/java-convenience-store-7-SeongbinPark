@@ -9,8 +9,8 @@ public class Promotion {
     private final LocalDate startDate;
     private final LocalDate endDate;
 
-    public Promotion(String name, int buyQuantity, int getFreeQuantity,
-                     LocalDate startDate, LocalDate endDate) {
+    public Promotion(final String name, final int buyQuantity, final int getFreeQuantity,
+                     final LocalDate startDate, final LocalDate endDate) {
         this.name = name;
         this.buyQuantity = buyQuantity;
         this.getFreeQuantity = getFreeQuantity;
@@ -30,11 +30,7 @@ public class Promotion {
         return getFreeQuantity;
     }
 
-    public boolean isValid(LocalDate date) {
+    public boolean isValid(final LocalDate date) {
         return !date.isBefore(startDate) && !date.isAfter(endDate);
-    }
-
-    public int calculateFreeQuantity(int quantity) {
-        return (quantity / buyQuantity) * getFreeQuantity;
     }
 }

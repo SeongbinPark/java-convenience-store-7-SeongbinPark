@@ -10,8 +10,8 @@ public class Receipt {
     private final int promotionDiscount;
     private final int membershipDiscount;
 
-    public Receipt(List<OrderItem> orderItems, List<FreeItem> freeItems,
-                   int totalAmount, int promotionDiscount, int membershipDiscount) {
+    public Receipt(final List<OrderItem> orderItems, final List<FreeItem> freeItems,
+                   final int totalAmount, final int promotionDiscount, final int membershipDiscount) {
         this.orderItems = new ArrayList<>(orderItems);
         this.freeItems = new ArrayList<>(freeItems);
         this.totalAmount = totalAmount;

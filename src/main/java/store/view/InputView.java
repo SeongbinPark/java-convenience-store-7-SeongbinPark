@@ -1,4 +1,3 @@
-// src/main/java/store/view/InputView.java
 package store.view;
 
 import camp.nextstep.edu.missionutils.Console;
@@ -10,13 +9,13 @@ public class InputView {
         return Console.readLine();
     }
 
-    public boolean readPromotionAddition(Product product) {
+    public boolean readPromotionAddition(final Product product) {
         System.out.printf("현재 %s은(는) 1개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)%n",
                 product.getName());
         return readYesNo();
     }
 
-    public boolean readNormalPriceConfirmation(Product product, int quantity) {
+    public boolean readNormalPriceConfirmation(final Product product, final int quantity) {
         System.out.printf("현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)%n",
                 product.getName(), quantity);
         return readYesNo();
@@ -33,12 +32,12 @@ public class InputView {
     }
 
     private boolean readYesNo() {
-        String input = Console.readLine().toUpperCase();
+        final String input = Console.readLine().toUpperCase();
         validateYesNo(input);
         return "Y".equals(input);
     }
 
-    private void validateYesNo(String input) {
+    private void validateYesNo(final String input) {
         if (!input.equals("Y") && !input.equals("N")) {
             throw new IllegalArgumentException("[ERROR] Y 또는 N만 입력 가능합니다. 다시 입력해 주세요.");
         }

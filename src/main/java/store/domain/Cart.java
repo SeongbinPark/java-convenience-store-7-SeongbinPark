@@ -1,4 +1,3 @@
-// src/main/java/store/domain/Cart.java
 package store.domain;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class Cart {
         this.freeItems = new ArrayList<>();
     }
 
-    public void addOrder(Product product, int quantity, int promotionSets) {
+    public void addOrder(final Product product, final int quantity, final int promotionSets) {
         items.add(new OrderItem(product, quantity));
         if (promotionSets > 0) {
             // promotionSets가 정확한 증정품 개수

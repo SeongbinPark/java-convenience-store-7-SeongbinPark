@@ -1,4 +1,3 @@
-// src/main/java/store/domain/OrderItem.java
 package store.domain;
 
 public record OrderItem(Product product, int quantity) {
