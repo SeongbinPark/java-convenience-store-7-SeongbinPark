@@ -37,7 +37,14 @@ public class Application {
             outputView.printProducts(storeService.getProducts());
 
             processOrder();
-            continueShopping = inputView.readContinueShopping();
+            while (true) {
+                try {
+                    continueShopping = inputView.readContinueShopping();
+                    break;
+                } catch (IllegalArgumentException e) {
+                    outputView.printError(e.getMessage());
+                }
+            }
         }
     }
 
@@ -56,7 +63,15 @@ public class Application {
         final String orderInput = inputView.readOrder();
         storeService.processOrder(orderInput, inputView);
 
-        final boolean useMembership = inputView.readMembershipChoice();
+        boolean useMembership;
+        while (true) {
+            try {
+                useMembership = inputView.readMembershipChoice();
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printError(e.getMessage());
+            }
+        }
         final Receipt receipt = storeService.generateReceipt(useMembership);
         outputView.printReceipt(receipt);
     }

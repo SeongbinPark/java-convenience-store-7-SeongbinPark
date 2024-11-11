@@ -1,6 +1,7 @@
 package store.view;
 
 import camp.nextstep.edu.missionutils.Console;
+import store.constant.ErrorMessages;
 import store.domain.Product;
 
 public class InputView {
@@ -43,7 +44,7 @@ public class InputView {
 
     private void validateYesNo(final String input) {
         if (!input.equalsIgnoreCase("Y") && !input.equalsIgnoreCase("N")) {
-            throw new IllegalArgumentException("[ERROR] Y 또는 N만 입력 가능합니다. 다시 입력해 주세요.");
+            throw new IllegalArgumentException(ErrorMessages.INVALID_YES_NO_INPUT.getMessage());
         }
     }
 }

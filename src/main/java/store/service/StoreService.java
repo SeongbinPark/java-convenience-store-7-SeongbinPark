@@ -13,6 +13,7 @@ import store.domain.Product;
 import store.domain.Promotion;
 import store.domain.Receipt;
 import store.view.InputView;
+import store.view.OutputView;
 
 public class StoreService {
     private static final Pattern ORDER_PATTERN = Pattern.compile("\\[(.*?)-(\\d+)]");
@@ -162,9 +163,20 @@ public class StoreService {
     private boolean handlePartialPromotionRejection(Product promotionProduct, int quantity, InputView inputView,
                                                     int promotionQuantity,
                                                     int availablePromotionStock) {
+        OutputView outputView = new OutputView();
         if (quantity > promotionQuantity + 1 && promotionQuantity > 0) {
             final int nonPromotionQuantity = quantity - promotionQuantity;
-            if (!inputView.readNormalPriceConfirmation(promotionProduct, nonPromotionQuantity)) {
+            boolean isNormalPriceConfirmation;
+            while (true) {
+                try {
+                    isNormalPriceConfirmation = inputView.readNormalPriceConfirmation(promotionProduct,
+                            nonPromotionQuantity);
+                    break;
+                } catch (IllegalArgumentException e) {
+                    outputView.printError(e.getMessage());
+                }
+            }
+            if (!isNormalPriceConfirmation) {
                 processPromotionRejection(promotionProduct, quantity, promotionQuantity, availablePromotionStock);
                 return true;
             }
