@@ -67,7 +67,7 @@ public class OutputView {
     }
 
     private static void appendProductHeader(StringBuilder sb) {
-        sb.append(OutputMessages.RECEIPT_HEADER.getMessage()).append(LINE_SEPARATOR);
+        sb.append(LINE_SEPARATOR).append(OutputMessages.RECEIPT_HEADER.getMessage()).append(LINE_SEPARATOR);
         sb.append(String.format("%-" + NAME_WIDTH + "s\t\t수량\t\t금액%n", "상품명"));
     }
 
