@@ -47,7 +47,7 @@ public class OutputView {
                     product.getName(),
                     product.getPrice(),
                     product.getTotalStock(),
-                    promotionType);
+                    promotionType + " ");
         }
     }
 
@@ -56,7 +56,7 @@ public class OutputView {
             System.out.printf(OutputMessages.PRODUCT_UNAVAILABLE.getMessage(),
                     product.getName(),
                     product.getPrice(),
-                    promotionType);
+                    promotionType + " ");
         }
     }
 
