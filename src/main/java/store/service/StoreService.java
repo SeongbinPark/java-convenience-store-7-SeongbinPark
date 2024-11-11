@@ -67,6 +67,30 @@ public class StoreService {
         return requests;
     }
 
+    private void processOrderRequest(OrderRequest request, InputView inputView) {
+        Product product = findProduct(request.productName());
+        int quantity = request.quantity();
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("[ERROR] 수량은 1개 이상이어야 합니다.");
+        }
+
+        if (quantity > getTotalStockForProduct(product.getName())) {
+            throw new IllegalArgumentException(
+                    String.format("[ERROR] 재고가 부족합니다. 현재 총 재고: %d개", getTotalStockForProduct(product.getName())));
+        }
+
+        if (product.hasPromotion() && promotionService.canApplyPromotion(product)) {
+            // 프로모션 구매
+        } else {
+            // 일반 구매
+        }
+    }
+
+    private int getTotalStockForProduct(String productName) {
+        return 0;
+    }
+
     private Product findProduct(String name) {
         return products.stream()
                 .filter(p -> p.getName().equals(name))
