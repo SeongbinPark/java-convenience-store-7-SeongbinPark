@@ -1,5 +1,7 @@
 package store.domain;
 
+import store.constant.ErrorMessages;
+
 public class Product {
     private final String name;
     private final int price;
@@ -51,7 +53,7 @@ public class Product {
     public void processOrder(final int quantity, final int promotionQuantity) {
         if (quantity > getTotalStock()) {
             throw new IllegalArgumentException(
-                    String.format("[ERROR] 재고가 부족합니다. 현재 총 재고: %d개", getTotalStock()));
+                    String.format(ErrorMessages.INSUFFICIENT_STOCK.getMessage(), getTotalStock()));
         }
 
         // 무조건 프로모션 재고 먼저 사용

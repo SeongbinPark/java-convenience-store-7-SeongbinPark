@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import store.constant.ErrorMessages;
 import store.domain.Cart;
 import store.domain.FreeItem;
 import store.domain.OrderItem;
@@ -74,7 +75,7 @@ public class StoreService {
         }
 
         if (requests.isEmpty()) {
-            throw new IllegalArgumentException("[ERROR] 올바르지 않은 주문 형식입니다.");
+            throw new IllegalArgumentException(ErrorMessages.INVALID_ORDER_FORMAT.getMessage());
         }
         return requests;
     }
@@ -84,12 +85,13 @@ public class StoreService {
         int quantity = request.quantity();
 
         if (quantity <= 0) {
-            throw new IllegalArgumentException("[ERROR] 수량은 1개 이상이어야 합니다.");
+            throw new IllegalArgumentException(ErrorMessages.INVALID_QUANTITY.getMessage());
         }
 
         if (quantity > getTotalStockForProduct(product.getName())) {
             throw new IllegalArgumentException(
-                    String.format("[ERROR] 재고가 부족합니다. 현재 총 재고: %d개", getTotalStockForProduct(product.getName())));
+                    String.format(ErrorMessages.INSUFFICIENT_STOCK.getMessage(),
+                            getTotalStockForProduct(product.getName())));
         }
 
         if (product.hasPromotion() && promotionService.canApplyPromotion(product)) {
@@ -160,7 +162,7 @@ public class StoreService {
         return products.stream()
                 .filter(p -> p.getName().equals(name))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.PRODUCT_NOT_FOUND.getMessage()));
     }
 
     public Receipt generateReceipt(final boolean useMembership) {

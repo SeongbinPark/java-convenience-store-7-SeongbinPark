@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import store.constant.ErrorMessages;
 import store.domain.Product;
 import store.domain.Promotion;
 
@@ -21,7 +22,7 @@ public class FileLoader {
             final List<String> lines = Files.readAllLines(PRODUCTS_PATH);
             return parseProducts(lines.subList(1, lines.size())); // Skip header
         } catch (final IOException e) {
-            throw new IllegalStateException("[ERROR] 상품 정보를 불러올 수 없습니다.", e);
+            throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PRODUCTS.getMessage(), e);
         }
     }
 
@@ -30,7 +31,7 @@ public class FileLoader {
             final List<String> lines = Files.readAllLines(PROMOTIONS_PATH);
             return parsePromotions(lines.subList(1, lines.size())); // Skip header
         } catch (final IOException e) {
-            throw new IllegalStateException("[ERROR] 프로모션 정보를 불러올 수 없습니다.", e);
+            throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PROMOTIONS.getMessage(), e);
         }
     }
 
@@ -73,7 +74,7 @@ public class FileLoader {
 
     private static void validateProductColumns(final String[] columns) {
         if (columns.length != 4) {
-            throw new IllegalStateException("[ERROR] 상품 정보 형식이 올바르지 않습니다.");
+            throw new IllegalStateException(ErrorMessages.INVALID_PRODUCT_FORMAT.getMessage());
         }
         validateNumericValue(columns[1], "상품 가격");
         validateNumericValue(columns[2], "상품 수량");
@@ -81,7 +82,7 @@ public class FileLoader {
 
     private static void validatePromotionColumns(final String[] columns) {
         if (columns.length != 5) {
-            throw new IllegalStateException("[ERROR] 프로모션 정보 형식이 올바르지 않습니다.");
+            throw new IllegalStateException(ErrorMessages.INVALID_PROMOTION_FORMAT.getMessage());
         }
         validateNumericValue(columns[1], "구매 수량");
         validateNumericValue(columns[2], "증정 수량");
@@ -94,11 +95,11 @@ public class FileLoader {
             final int numericValue = Integer.parseInt(value);
             if (numericValue < 0) {
                 throw new IllegalStateException(
-                        String.format("[ERROR] %s는 0보다 작을 수 없습니다.", fieldName));
+                        String.format(ErrorMessages.INVALID_QUANTITY_FORMAT.getMessage(), fieldName));
             }
         } catch (final NumberFormatException e) {
             throw new IllegalStateException(
-                    String.format("[ERROR] %s 형식이 올바르지 않습니다.", fieldName));
+                    String.format(ErrorMessages.INVALID_QUANTITY_FORMAT.getMessage(), fieldName));
         }
     }
 
@@ -107,7 +108,7 @@ public class FileLoader {
             LocalDate.parse(value);
         } catch (final Exception e) {
             throw new IllegalStateException(
-                    String.format("[ERROR] %s 형식이 올바르지 않습니다. (YYYY-MM-DD)", fieldName));
+                    String.format(ErrorMessages.INVALID_DATE_FORMAT.getMessage(), fieldName));
         }
     }
 }

@@ -1,6 +1,7 @@
 package store.view;
 
 import java.util.List;
+import store.constant.OutputMessages;
 import store.domain.FreeItem;
 import store.domain.OrderItem;
 import store.domain.Product;
@@ -10,20 +11,20 @@ public class OutputView {
     private static final String LINE_SEPARATOR = System.lineSeparator();
 
     public void printWelcome() {
-        System.out.println("\n안녕하세요. W편의점입니다.");
-        System.out.println("현재 보유하고 있는 상품입니다.\n");
+        System.out.println(OutputMessages.WELCOME.getMessage());
+        System.out.println(OutputMessages.CURRENT_PRODUCTS.getMessage());
     }
 
     public void printProducts(final List<Product> products) {
         for (final Product product : products) {
             if (product.getTotalStock() > 0) {
-                System.out.printf("- %s %,d원 %d개%s%n",
+                System.out.printf(OutputMessages.PRODUCT_AVAILABLE.getMessage(),
                         product.getName(),
                         product.getPrice(),
                         product.getTotalStock(),
                         product.hasPromotion() ? " " + product.getPromotionType() : "");
             } else {
-                System.out.printf("- %s %,d원 재고 없음%s%n",
+                System.out.printf(OutputMessages.PRODUCT_UNAVAILABLE.getMessage(),
                         product.getName(),
                         product.getPrice(),
                         product.hasPromotion() ? " " + product.getPromotionType() : "");
@@ -34,8 +35,9 @@ public class OutputView {
 
     public void printReceipt(final Receipt receipt) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n===========W 편의점=============").append(LINE_SEPARATOR);
-        sb.append(String.format("%-12s %4s %10s%n", "상품명", "수량", "금액")); // 제목의 너비 조정
+        sb.append(OutputMessages.RECEIPT_HEADER.getMessage()).append(LINE_SEPARATOR);
+        sb.append(String.format(OutputMessages.RECEIPT_PRODUCT_HEADER.getMessage(),
+                "상품명", "수량", "금액")); // 제목의 너비 조정
 
         for (final OrderItem item : receipt.getOrderItems()) {
             sb.append(String.format("%-12s %4d %,10d%n",
@@ -44,26 +46,25 @@ public class OutputView {
                     item.calculateTotalPrice()));
         }
 
-        sb.append("===========증    정=============").append(LINE_SEPARATOR);
+        sb.append(OutputMessages.RECEIPT_SECTION_FREE_ITEMS.getMessage()).append(LINE_SEPARATOR);
         for (final FreeItem item : receipt.getFreeItems()) {
             sb.append(String.format("%-12s %4d%n",
                     item.product().getName(),
                     item.quantity()));
         }
 
-        sb.append("==============================").append(LINE_SEPARATOR);
+        sb.append(OutputMessages.RECEIPT_SECTION_TOTAL.getMessage()).append(LINE_SEPARATOR);
         sb.append(String.format("%-12s %4d %,10d%n",
-                "총구매액", receipt.getTotalQuantity(), receipt.getTotalAmount()));
+                OutputMessages.TOTAL_PURCHASE.getMessage(), receipt.getTotalQuantity(), receipt.getTotalAmount()));
         sb.append(String.format("%-12s %,14d%n",
-                "행사할인", -receipt.getPromotionDiscount()));
+                OutputMessages.PROMOTION_DISCOUNT.getMessage(), -receipt.getPromotionDiscount()));
         sb.append(String.format("%-12s %,14d%n",
-                "멤버십할인", -receipt.getMembershipDiscount()));
+                OutputMessages.MEMBERSHIP_DISCOUNT.getMessage(), -receipt.getMembershipDiscount()));
         sb.append(String.format("%-12s %,14d%n",
-                "내실돈", receipt.getFinalAmount()));
+                OutputMessages.FINAL_AMOUNT.getMessage(), receipt.getFinalAmount()));
 
         System.out.print(sb);
     }
-
 
     public void printError(final String message) {
         System.out.println(message);
