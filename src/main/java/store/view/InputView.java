@@ -22,23 +22,25 @@ public class InputView {
     }
 
     public boolean readMembershipChoice() {
-        System.out.println("\n멤버십 할인을 받으시겠습니까? (Y/N)");
+        System.out.println();
+        System.out.println("멤버십 할인을 받으시겠습니까? (Y/N)");
         return readYesNo();
     }
 
     public boolean readContinueShopping() {
-        System.out.println("\n감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
+        System.out.println();
+        System.out.println("감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
         return readYesNo();
     }
 
     private boolean readYesNo() {
-        final String input = Console.readLine().toUpperCase();
+        final String input = Console.readLine().toUpperCase().trim();
         validateYesNo(input);
         return "Y".equals(input);
     }
 
     private void validateYesNo(final String input) {
-        if (!input.equals("Y") && !input.equals("N")) {
+        if (!input.equalsIgnoreCase("Y") && !input.equalsIgnoreCase("N")) {
             throw new IllegalArgumentException("[ERROR] Y 또는 N만 입력 가능합니다. 다시 입력해 주세요.");
         }
     }
