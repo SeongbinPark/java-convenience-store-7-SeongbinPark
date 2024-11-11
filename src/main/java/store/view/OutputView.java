@@ -87,9 +87,9 @@ public class OutputView {
 
     private static void appendFreeItems(Receipt receipt, StringBuilder sb) {
         List<FreeItem> freeItems = receipt.getFreeItems();
-//        if (freeItems.isEmpty()) {
-//            return;
-//        }
+        if (freeItems.isEmpty()) { // 증정품이 없으면 증정칸 미출력
+            return;
+        }
         sb.append(OutputMessages.RECEIPT_SECTION_FREE_ITEMS.getMessage()).append(LINE_SEPARATOR);
         for (final FreeItem item : freeItems) {
             sb.append(String.format("%-" + NAME_WIDTH + "s\t\t%d%n",
