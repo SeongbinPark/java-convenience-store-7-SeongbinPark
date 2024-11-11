@@ -129,7 +129,6 @@ public class StoreService {
         completeSets = calculateCompleteSets(quantity, availablePromotionStock, buyQuantity);
         final int promotionQuantity = completeSets * (buyQuantity + 1);
 
-        // 추가 구매 제안이 있었다면 부분 프로모션 거절 메시지를 출력하지 않음
         if (!wasPromotionOffered) {
             if (handlePartialPromotionRejection(promotionProduct, quantity, inputView, promotionQuantity,
                     availablePromotionStock)) {
@@ -170,16 +169,13 @@ public class StoreService {
     }
 
     private boolean handlePartialPromotionRejection(Product promotionProduct, int quantity, InputView inputView,
-                                                    int promotionQuantity,
-                                                    int availablePromotionStock) {
+                                                    int promotionQuantity, int availablePromotionStock) {
         OutputView outputView = new OutputView();
-        // 추가 구매 제안 후에는 미적용 메시지를 출력하지 않음
         if (quantity > promotionQuantity + 1 && promotionQuantity > 0
                 && quantity != promotionProduct.getPromotionStock()) {
             final int nonPromotionQuantity = quantity - promotionQuantity;
             boolean isNormalPriceConfirmation = getIsNormalPriceConfirmation(promotionProduct, inputView,
-                    nonPromotionQuantity,
-                    outputView);
+                    nonPromotionQuantity, outputView);
             if (!isNormalPriceConfirmation) {
                 processPromotionRejection(promotionProduct, quantity, promotionQuantity, availablePromotionStock);
                 return true;
