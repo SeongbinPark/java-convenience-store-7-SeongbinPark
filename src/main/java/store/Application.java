@@ -8,47 +8,56 @@ import store.view.InputView;
 import store.view.OutputView;
 
 public class Application {
-    public static void main(final String[] args) {
-        try {
-            final StoreService storeService = new StoreService(
-                    FileLoader.loadProducts(),
-                    new PromotionService(FileLoader.loadPromotions())
-            );
-            final InputView inputView = new InputView();
-            final OutputView outputView = new OutputView();
+    private final StoreService storeService;
+    private final InputView inputView;
+    private final OutputView outputView;
 
-            runStore(storeService, inputView, outputView);
+    public Application() {
+        this.storeService = new StoreService(
+                FileLoader.loadProducts(),
+                new PromotionService(FileLoader.loadPromotions())
+        );
+        this.inputView = new InputView();
+        this.outputView = new OutputView();
+    }
+
+    public static void main(String[] args) {
+        try {
+            Application app = new Application();
+            app.runStore();
         } catch (final IllegalStateException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private static void runStore(final StoreService storeService, final InputView inputView,
-                                 final OutputView outputView) {
+    private void runStore() {
         boolean continueShopping = true;
         while (continueShopping) {
             outputView.printWelcome();
             outputView.printProducts(storeService.getProducts());
 
-            processOrder(storeService, inputView, outputView);
+            processOrder();
             continueShopping = inputView.readContinueShopping();
         }
     }
 
-    private static void processOrder(final StoreService storeService, final InputView inputView,
-                                     final OutputView outputView) {
+    private void processOrder() {
         while (true) {
             try {
-                final String orderInput = inputView.readOrder();
-                storeService.processOrder(orderInput, inputView);
-
-                final boolean useMembership = inputView.readMembershipChoice();
-                final Receipt receipt = storeService.generateReceipt(useMembership);
-                outputView.printReceipt(receipt);
+                executeSingleOrder();
                 break;
             } catch (final IllegalArgumentException e) {
                 outputView.printError(e.getMessage());
             }
         }
+    }
+
+    private void executeSingleOrder() {
+        final String orderInput = inputView.readOrder();
+        storeService.processOrder(orderInput, inputView);
+
+        final boolean useMembership = inputView.readMembershipChoice();
+        final Receipt receipt = storeService.generateReceipt(useMembership);
+        outputView.printReceipt(receipt);
     }
 }
