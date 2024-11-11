@@ -47,7 +47,7 @@ public class StoreService {
         List<OrderRequest> requests = parseOrder(orderInput);
 
         for (OrderRequest request : requests) {
-            // 주문 요청을 처리
+            processOrderRequest(request, inputView);
         }
     }
 
@@ -67,4 +67,10 @@ public class StoreService {
         return requests;
     }
 
+    private Product findProduct(String name) {
+        return products.stream()
+                .filter(p -> p.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다."));
+    }
 }
