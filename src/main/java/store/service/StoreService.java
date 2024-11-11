@@ -115,42 +115,36 @@ public class StoreService {
         final Promotion promotion = promotionService.getPromotion(promotionProduct.getPromotionType());
         final int buyQuantity = promotion.getBuyQuantity();
         final int availablePromotionStock = promotionProduct.getPromotionStock();
-        completeSets = calculateCompleteSets(quantity, availablePromotionStock, buyQuantity); // 프로모션 적용 가능한 세트 수 계산
-        final int promotionQuantity = completeSets * (buyQuantity + 1);
-        quantity = offerAdditionalPromotion(promotionProduct, quantity, inputView, buyQuantity,
-                availablePromotionStock); // 구매 수량이 정확히 n개(2+1의 경우 2개)일 때만 추가 구매 제안
-        finalizePromotionPurchase(promotionProduct, quantity, inputView, promotionQuantity, availablePromotionStock);
-    }
 
-    private void finalizePromotionPurchase(Product promotionProduct, int quantity, InputView inputView,
-                                           int promotionQuantity,
-                                           int availablePromotionStock) {
-        if (handlePartialPromotionRejection(promotionProduct, quantity, inputView, promotionQuantity,
-                availablePromotionStock)) {
-            return;
+        boolean wasPromotionOffered = false;
+        // 추가 구매 제안
+        if ((quantity + 1) % (buyQuantity + 1) == 0 && (quantity + 1) <= availablePromotionStock) {
+            OutputView outputView = new OutputView();
+            if (addOneMore(promotionProduct, inputView, outputView)) {
+                quantity++;
+            }
+            wasPromotionOffered = true;
         }
-        final int useFromPromotion = reducePromotionStock(promotionProduct, quantity,
-                availablePromotionStock); // 재고 차감 (무조건 프로모션 재고 우선 사용)
-        final int remainingQuantity = quantity - useFromPromotion; // 부족한 수량은 일반 재고에서 처리
+
+        completeSets = calculateCompleteSets(quantity, availablePromotionStock, buyQuantity);
+        final int promotionQuantity = completeSets * (buyQuantity + 1);
+
+        // 추가 구매 제안이 있었다면 부분 프로모션 거절 메시지를 출력하지 않음
+        if (!wasPromotionOffered) {
+            if (handlePartialPromotionRejection(promotionProduct, quantity, inputView, promotionQuantity,
+                    availablePromotionStock)) {
+                return;
+            }
+        }
+
+        final int useFromPromotion = reducePromotionStock(promotionProduct, quantity, availablePromotionStock);
+        final int remainingQuantity = quantity - useFromPromotion;
         handleRemainingQuantity(promotionProduct, remainingQuantity);
         cart.addOrder(promotionProduct, quantity, completeSets);
     }
 
     private static int calculateCompleteSets(int quantity, int availablePromotionStock, int buyQuantity) {
         return Math.min(availablePromotionStock, quantity) / (buyQuantity + 1);
-    }
-
-    private int offerAdditionalPromotion(Product promotionProduct, int quantity, InputView inputView, int buyQuantity,
-                                         int availablePromotionStock) {
-        OutputView outputView = new OutputView();
-        if (quantity == buyQuantity && availablePromotionStock >= buyQuantity) {
-            boolean addOne = addOneMore(promotionProduct, inputView, outputView);
-            if (addOne) {
-                quantity = buyQuantity + 1;
-                completeSets = 1;
-            }
-        }
-        return quantity;
     }
 
     private static boolean addOneMore(Product promotionProduct, InputView inputView, OutputView outputView) {
@@ -179,7 +173,9 @@ public class StoreService {
                                                     int promotionQuantity,
                                                     int availablePromotionStock) {
         OutputView outputView = new OutputView();
-        if (quantity > promotionQuantity + 1 && promotionQuantity > 0) {
+        // 추가 구매 제안 후에는 미적용 메시지를 출력하지 않음
+        if (quantity > promotionQuantity + 1 && promotionQuantity > 0
+                && quantity != promotionProduct.getPromotionStock()) {
             final int nonPromotionQuantity = quantity - promotionQuantity;
             boolean isNormalPriceConfirmation = getIsNormalPriceConfirmation(promotionProduct, inputView,
                     nonPromotionQuantity,
@@ -214,7 +210,6 @@ public class StoreService {
         promotionProduct.setPromotionStock(availablePromotionStock);
 
         reducePromotionStock(promotionProduct, quantity, promotionQuantity);
-        System.out.println(promotionQuantity + " " + quantity + " " + availablePromotionStock);
     }
 
 
