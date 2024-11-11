@@ -17,17 +17,24 @@ public class OutputView {
 
     public void printProducts(final List<Product> products) {
         for (final Product product : products) {
+            String promotionType = "";
+            if (product.hasPromotion()) {
+                promotionType = " " + product.getPromotionType();
+            }
+
             if (product.getTotalStock() > 0) {
                 System.out.printf(OutputMessages.PRODUCT_AVAILABLE.getMessage(),
                         product.getName(),
                         product.getPrice(),
                         product.getTotalStock(),
-                        product.hasPromotion() ? " " + product.getPromotionType() : "");
-            } else {
+                        promotionType);
+            }
+
+            if (product.getTotalStock() <= 0) {
                 System.out.printf(OutputMessages.PRODUCT_UNAVAILABLE.getMessage(),
                         product.getName(),
                         product.getPrice(),
-                        product.hasPromotion() ? " " + product.getPromotionType() : "");
+                        promotionType);
             }
         }
         System.out.println();
@@ -37,7 +44,7 @@ public class OutputView {
         final StringBuilder sb = new StringBuilder();
         sb.append(OutputMessages.RECEIPT_HEADER.getMessage()).append(LINE_SEPARATOR);
         sb.append(String.format(OutputMessages.RECEIPT_PRODUCT_HEADER.getMessage(),
-                "상품명", "수량", "금액")); // 제목의 너비 조정
+                "상품명", "수량", "금액")).append(LINE_SEPARATOR); // 제목의 너비 조정
 
         for (final OrderItem item : receipt.getOrderItems()) {
             sb.append(String.format("%-12s %4d %,10d%n",
