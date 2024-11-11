@@ -32,12 +32,20 @@ public class Application {
 
     private void runStore() {
         boolean continueShopping = true;
+        int cycleCount = 0;
         while (continueShopping) {
-            outputView.printWelcome();
+            if (cycleCount == 0) {
+                outputView.printWelcome();
+            }
+            if (cycleCount > 0) {
+                outputView.printWelcome2();
+            }
+
             outputView.printProducts(storeService.getProducts());
 
             processOrder();
             continueShopping = checkContinueShopping();
+            cycleCount++;
         }
     }
 
