@@ -49,7 +49,7 @@ public class StoreService {
             }
         }
         return null;
-    } // else
+    }
 
     public void processOrder(final String orderInput, final InputView inputView) {
         cart.clear();
@@ -224,7 +224,7 @@ public class StoreService {
             }
         }
         throw new IllegalArgumentException(ErrorMessages.PRODUCT_NOT_FOUND.getMessage());
-    } //else
+    }
 
     public Receipt generateReceipt(final boolean useMembership) {
         final int totalAmount = calculateTotalAmount();
