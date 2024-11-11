@@ -14,6 +14,7 @@ public class OutputView {
     public void printWelcome() {
         System.out.println(OutputMessages.WELCOME.getMessage());
         System.out.println(OutputMessages.CURRENT_PRODUCTS.getMessage());
+        System.out.println();
     }
 
     public void printProducts(final List<Product> products) {
