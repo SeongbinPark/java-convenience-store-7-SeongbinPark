@@ -42,13 +42,6 @@ public class StoreService {
                 .sum();
     }
 
-    private Product findPromotionProduct(final String productName) {
-        return products.stream()
-                .filter(p -> p.getName().equals(productName) && p.hasPromotion())
-                .findFirst()
-                .orElse(null);
-    }
-
     private Product findNormalProduct(final String productName) {
         return products.stream()
                 .filter(p -> p.getName().equals(productName) && !p.hasPromotion())
