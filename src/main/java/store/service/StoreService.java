@@ -124,14 +124,14 @@ public class StoreService {
                 cart.addOrder(promotionProduct, promotionProduct.getPromotionStock(), completeSets);
                 promotionProduct.setPromotionStock(availablePromotionStock);
 
-                // 재고 차감
+                reducePromotionStock(promotionProduct, quantity, promotionQuantity);
                 System.out.println(promotionQuantity + " " + quantity + " " + availablePromotionStock);
-
                 return;
             }
         }
 
-        int useFromPromotion = 0; // 재고 차감 (무조건 프로모션 재고 우선 사용)
+        // 재고 차감 (무조건 프로모션 재고 우선 사용)
+        int useFromPromotion = reducePromotionStock(promotionProduct, quantity, availablePromotionStock);
 
         // 부족한 수량은 일반 재고에서 처리
         int remainingQuantity = quantity - useFromPromotion;
@@ -143,5 +143,11 @@ public class StoreService {
         }
 
         cart.addOrder(promotionProduct, quantity, completeSets);
+    }
+
+    private static int reducePromotionStock(Product promotionProduct, int quantity, int availablePromotionStock) {
+        int useFromPromotion = Math.min(quantity, availablePromotionStock);
+        promotionProduct.processOrder(useFromPromotion, useFromPromotion);
+        return useFromPromotion;
     }
 }
