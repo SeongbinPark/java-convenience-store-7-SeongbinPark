@@ -110,7 +110,6 @@ public class StoreService {
         final int availablePromotionStock = promotionProduct.getPromotionStock();
 
         boolean wasPromotionOffered = false;
-        // 추가 구매 제안
         if ((quantity + 1) % (buyQuantity + 1) == 0 && (quantity + 1) <= availablePromotionStock) {
             OutputView outputView = new OutputView();
             if (addOneMore(promotionProduct, inputView, outputView)) {
@@ -119,6 +118,12 @@ public class StoreService {
             wasPromotionOffered = true;
         }
 
+        finalizePromotionPurchase(promotionProduct, quantity, inputView, availablePromotionStock, buyQuantity,
+                wasPromotionOffered);
+    }
+
+    private void finalizePromotionPurchase(Product promotionProduct, int quantity, InputView inputView,
+                                           int availablePromotionStock, int buyQuantity, boolean wasPromotionOffered) {
         completeSets = calculateCompleteSets(quantity, availablePromotionStock, buyQuantity);
         final int promotionQuantity = completeSets * (buyQuantity + 1);
 
@@ -128,7 +133,10 @@ public class StoreService {
                 return;
             }
         }
+        processPromotionStock(promotionProduct, quantity, availablePromotionStock);
+    }
 
+    private void processPromotionStock(Product promotionProduct, int quantity, int availablePromotionStock) {
         final int useFromPromotion = reducePromotionStock(promotionProduct, quantity, availablePromotionStock);
         final int remainingQuantity = quantity - useFromPromotion;
         handleRemainingQuantity(promotionProduct, remainingQuantity);
