@@ -17,4 +17,15 @@ class ProductTest {
         assertThat(product.getPromotionType()).isEmpty();
     }
 
+    @Test
+    @DisplayName("상품 생성 시 프로모션 재고와 일반 재고가 정상적으로 설정된다")
+    void createProductWithStocks() {
+        // given & when
+        Product product = new Product("콜라", 1000, 5, 7, "탄산2+1");
+
+        // then
+        assertThat(product.getPromotionStock()).isEqualTo(5);
+        assertThat(product.getNormalStock()).isEqualTo(7);
+        assertThat(product.getTotalStock()).isEqualTo(12);
+    }
 }
