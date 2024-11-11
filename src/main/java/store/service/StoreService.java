@@ -1,3 +1,4 @@
+// src/main/java/store/service/StoreService.java
 package store.service;
 
 import java.util.ArrayList;
@@ -31,6 +32,13 @@ public class StoreService {
 
     public List<Product> getProducts() {
         return new ArrayList<>(products);
+    }
+
+    private int getTotalStockForProduct(String productName) {
+        return products.stream()
+                .filter(p -> p.getName().equals(productName))
+                .mapToInt(p -> p.getPromotionStock() + p.getNormalStock())
+                .sum();
     }
 
     private Product findPromotionProduct(String productName) {
@@ -88,19 +96,8 @@ public class StoreService {
         if (product.hasPromotion() && promotionService.canApplyPromotion(product)) {
             handlePromotionPurchase(product, quantity, inputView);
         } else {
-            // 일반 구매
+            handleNormalPurchase(product, quantity);
         }
-    }
-
-    private int getTotalStockForProduct(String productName) {
-        return 0;
-    }
-
-    private Product findProduct(String name) {
-        return products.stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다."));
     }
 
     private void handlePromotionPurchase(Product promotionProduct, int quantity, InputView inputView) {
@@ -152,6 +149,19 @@ public class StoreService {
         int useFromPromotion = Math.min(quantity, availablePromotionStock);
         promotionProduct.processOrder(useFromPromotion, useFromPromotion);
         return useFromPromotion;
+    }
+
+
+    private void handleNormalPurchase(Product product, int quantity) {
+        product.processOrder(quantity, 0);
+        cart.addOrder(product, quantity, 0);
+    }
+
+    private Product findProduct(String name) {
+        return products.stream()
+                .filter(p -> p.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다."));
     }
 
     public Receipt generateReceipt(boolean useMembership) {
