@@ -86,11 +86,11 @@ public class FileLoader {
         for (final String line : lines) {
             final String[] columns = line.split(COLUMN_DELIMITER);
             validatePromotionColumns(columns);
-            final String name = columns[0];
-            final int buyQuantity = Integer.parseInt(columns[1]);
-            final int getFreeQuantity = Integer.parseInt(columns[2]);
-            final LocalDate startDate = LocalDate.parse(columns[3]);
-            final LocalDate endDate = LocalDate.parse(columns[4]);
+            final String name = columns[0].trim();
+            final int buyQuantity = Integer.parseInt(columns[1].trim());
+            final int getFreeQuantity = Integer.parseInt(columns[2].trim());
+            final LocalDate startDate = LocalDate.parse(columns[3].trim());
+            final LocalDate endDate = LocalDate.parse(columns[4].trim());
             promotions.add(new Promotion(name, buyQuantity, getFreeQuantity, startDate, endDate));
         }
     }
