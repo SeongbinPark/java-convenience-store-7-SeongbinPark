@@ -8,6 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import store.constant.ErrorMessages;
 import store.domain.Product;
 import store.domain.Promotion;
@@ -26,12 +27,10 @@ public class FileLoader {
                 throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PRODUCTS.getMessage());
             }
 
-            List<String> lines = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-            return parseProducts(lines.subList(1, lines.size())); // Skip header
+            return reader.lines()
+                    .skip(1) // 헤더 건너뛰기
+                    .map(FileLoader::createProductFromLine)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PRODUCTS.getMessage(), e);
         }
@@ -45,15 +44,36 @@ public class FileLoader {
                 throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PROMOTIONS.getMessage());
             }
 
-            List<String> lines = new ArrayList<>();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-            return parsePromotions(lines.subList(1, lines.size())); // Skip header
+            return reader.lines()
+                    .skip(1) // 헤더 건너뛰기
+                    .map(FileLoader::parsePromotionFromLine)
+                    .collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalStateException(ErrorMessages.ERROR_LOADING_PROMOTIONS.getMessage(), e);
         }
+    }
+
+    private static Product createProductFromLine(String line) {
+        final String[] columns = line.split(COLUMN_DELIMITER);
+        validateProductColumns(columns);
+        final String name = columns[0].trim();
+        final int price = Integer.parseInt(columns[1].trim());
+        final int quantity = Integer.parseInt(columns[2].trim());
+        final String promotionType = initializePromotionType(columns[3].trim());
+        final int promotionStock = calculatePromotionStock(promotionType, quantity);
+        final int normalStock = calculateNormalStock(promotionType, quantity);
+        return new Product(name, price, promotionStock, normalStock, promotionType);
+    }
+
+    private static Promotion parsePromotionFromLine(String line) {
+        final String[] columns = line.split(COLUMN_DELIMITER);
+        validatePromotionColumns(columns);
+        final String name = columns[0].trim();
+        final int buyQuantity = Integer.parseInt(columns[1].trim());
+        final int getFreeQuantity = Integer.parseInt(columns[2].trim());
+        final LocalDate startDate = LocalDate.parse(columns[3].trim());
+        final LocalDate endDate = LocalDate.parse(columns[4].trim());
+        return new Promotion(name, buyQuantity, getFreeQuantity, startDate, endDate);
     }
 
     private static List<Product> parseProducts(final List<String> lines) {
