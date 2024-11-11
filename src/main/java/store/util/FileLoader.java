@@ -45,10 +45,10 @@ public class FileLoader {
         for (final String line : lines) {
             final String[] columns = line.split(COLUMN_DELIMITER);
             validateProductColumns(columns);
-            final String name = columns[0];
-            final int price = Integer.parseInt(columns[1]);
-            final int quantity = Integer.parseInt(columns[2]);
-            final String promotionType = initializePromotionType(columns[3]);
+            final String name = columns[0].trim();
+            final int price = Integer.parseInt(columns[1].trim());
+            final int quantity = Integer.parseInt(columns[2].trim());
+            final String promotionType = initializePromotionType(columns[3].trim());
             final int promotionStock = calculatePromotionStock(promotionType, quantity);
             final int normalStock = calculateNormalStock(promotionType, quantity);
             products.add(new Product(name, price, promotionStock, normalStock, promotionType));
