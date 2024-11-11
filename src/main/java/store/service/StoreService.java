@@ -2,9 +2,12 @@ package store.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import store.domain.Cart;
+import store.domain.OrderRequest;
 import store.domain.Product;
+import store.view.InputView;
 
 public class StoreService {
     private static final Pattern ORDER_PATTERN = Pattern.compile("\\[(.*?)-(\\d+)]");
@@ -38,4 +41,30 @@ public class StoreService {
                 .findFirst()
                 .orElse(null);
     }
+
+    public void processOrder(String orderInput, InputView inputView) {
+        cart.clear();
+        List<OrderRequest> requests = parseOrder(orderInput);
+
+        for (OrderRequest request : requests) {
+            // 주문 요청을 처리
+        }
+    }
+
+    private List<OrderRequest> parseOrder(String input) {
+        List<OrderRequest> requests = new ArrayList<>();
+        Matcher matcher = ORDER_PATTERN.matcher(input);
+
+        while (matcher.find()) {
+            String productName = matcher.group(1);
+            int quantity = Integer.parseInt(matcher.group(2));
+            requests.add(new OrderRequest(productName, quantity));
+        }
+
+        if (requests.isEmpty()) {
+            throw new IllegalArgumentException("[ERROR] 올바르지 않은 주문 형식입니다.");
+        }
+        return requests;
+    }
+
 }
