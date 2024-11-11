@@ -48,11 +48,32 @@ public class FileLoader {
             final String name = columns[0];
             final int price = Integer.parseInt(columns[1]);
             final int quantity = Integer.parseInt(columns[2]);
-            final String promotionType = NULL_STRING.equals(columns[3]) ? "" : columns[3];
-            final int promotionStock = !promotionType.isEmpty() ? quantity : 0;
-            final int normalStock = promotionType.isEmpty() ? quantity : 0;
+            final String promotionType = initializePromotionType(columns[3]);
+            final int promotionStock = calculatePromotionStock(promotionType, quantity);
+            final int normalStock = calculateNormalStock(promotionType, quantity);
             products.add(new Product(name, price, promotionStock, normalStock, promotionType));
         }
+    }
+
+    private static String initializePromotionType(String rawPromotionType) {
+        if (NULL_STRING.equals(rawPromotionType)) {
+            return "";
+        }
+        return rawPromotionType;
+    }
+
+    private static int calculatePromotionStock(String promotionType, int quantity) {
+        if (promotionType.isEmpty()) {
+            return 0;
+        }
+        return quantity;
+    }
+
+    private static int calculateNormalStock(String promotionType, int quantity) {
+        if (promotionType.isEmpty()) {
+            return quantity;
+        }
+        return 0;
     }
 
     private static List<Promotion> parsePromotions(final List<String> lines) {
