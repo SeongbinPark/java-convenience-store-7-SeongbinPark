@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import store.domain.Cart;
 import store.domain.OrderRequest;
 import store.domain.Product;
+import store.domain.Promotion;
 import store.view.InputView;
 
 public class StoreService {
@@ -17,6 +18,7 @@ public class StoreService {
     private final List<Product> products;
     private final PromotionService promotionService;
     private final Cart cart;
+    private int completeSets = 0;
 
     public StoreService(List<Product> products, PromotionService promotionService) {
         this.products = new ArrayList<>(products);
@@ -81,7 +83,7 @@ public class StoreService {
         }
 
         if (product.hasPromotion() && promotionService.canApplyPromotion(product)) {
-            // 프로모션 구매
+            handlePromotionPurchase(product, quantity, inputView);
         } else {
             // 일반 구매
         }
@@ -96,5 +98,50 @@ public class StoreService {
                 .filter(p -> p.getName().equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다."));
+    }
+
+    private void handlePromotionPurchase(Product promotionProduct, int quantity, InputView inputView) {
+        Promotion promotion = promotionService.getPromotion(promotionProduct.getPromotionType());
+        int buyQuantity = promotion.getBuyQuantity();
+        int availablePromotionStock = promotionProduct.getPromotionStock();
+
+        // 프로모션 적용 가능한 세트 수 계산
+        completeSets = Math.min(availablePromotionStock, quantity) / (buyQuantity + 1);
+
+        int promotionQuantity = completeSets * (buyQuantity + 1);
+        // 구매 수량이 정확히 n개(2+1의 경우 2개)일 때만 추가 구매 제안
+        if (quantity == buyQuantity && availablePromotionStock >= buyQuantity) {
+            if (inputView.readPromotionAddition(promotionProduct)) {
+                quantity = buyQuantity + 1;
+                completeSets = 1;
+            }
+        }
+        // n의 배수보다 큰 수량을 구매하고, 프로모션 적용이 일부만 가능한 경우에만 메시지 출력
+        else if (quantity > promotionQuantity + 1 && promotionQuantity > 0) {
+            int nonPromotionQuantity = quantity - promotionQuantity;
+            if (!inputView.readNormalPriceConfirmation(promotionProduct, nonPromotionQuantity)) {
+                promotionProduct.setPromotionStock(promotionQuantity);
+                cart.addOrder(promotionProduct, promotionProduct.getPromotionStock(), completeSets);
+                promotionProduct.setPromotionStock(availablePromotionStock);
+
+                // 재고 차감
+                System.out.println(promotionQuantity + " " + quantity + " " + availablePromotionStock);
+
+                return;
+            }
+        }
+
+        int useFromPromotion = 0; // 재고 차감 (무조건 프로모션 재고 우선 사용)
+
+        // 부족한 수량은 일반 재고에서 처리
+        int remainingQuantity = quantity - useFromPromotion;
+        if (remainingQuantity > 0) {
+            Product normalProduct = findNormalProduct(promotionProduct.getName());
+            if (normalProduct != null) {
+                normalProduct.processOrder(remainingQuantity, 0);
+            }
+        }
+
+        cart.addOrder(promotionProduct, quantity, completeSets);
     }
 }
