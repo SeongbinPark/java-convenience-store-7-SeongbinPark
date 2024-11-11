@@ -28,7 +28,7 @@ public class FileLoader {
             }
 
             return reader.lines()
-                    .skip(1) // 헤더 건너뛰기
+                    .skip(1) // Skip header
                     .map(FileLoader::createProductFromLine)
                     .collect(Collectors.toList());
         } catch (IOException e) {
@@ -45,7 +45,7 @@ public class FileLoader {
             }
 
             return reader.lines()
-                    .skip(1) // 헤더 건너뛰기
+                    .skip(1) // Skip header
                     .map(FileLoader::parsePromotionFromLine)
                     .collect(Collectors.toList());
         } catch (IOException e) {
