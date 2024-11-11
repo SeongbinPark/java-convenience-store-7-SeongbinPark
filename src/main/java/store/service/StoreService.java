@@ -43,11 +43,13 @@ public class StoreService {
     }
 
     private Product findNormalProduct(final String productName) {
-        return products.stream()
-                .filter(p -> p.getName().equals(productName) && !p.hasPromotion())
-                .findFirst()
-                .orElse(null);
-    }
+        for (Product product : products) {
+            if (product.getName().equals(productName) && !product.hasPromotion()) {
+                return product;
+            }
+        }
+        return null;
+    } // else
 
     public void processOrder(final String orderInput, final InputView inputView) {
         cart.clear();
@@ -216,11 +218,13 @@ public class StoreService {
     }
 
     private Product findProduct(final String name) {
-        return products.stream()
-                .filter(p -> p.getName().equals(name))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(ErrorMessages.PRODUCT_NOT_FOUND.getMessage()));
-    }
+        for (Product product : products) {
+            if (product.getName().equals(name)) {
+                return product;
+            }
+        }
+        throw new IllegalArgumentException(ErrorMessages.PRODUCT_NOT_FOUND.getMessage());
+    } //else
 
     public Receipt generateReceipt(final boolean useMembership) {
         final int totalAmount = calculateTotalAmount();
