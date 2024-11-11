@@ -15,7 +15,14 @@ public class Product {
         this.price = price;
         this.promotionStock = promotionStock;
         this.normalStock = normalStock;
-        this.promotionType = promotionType != null && !"null".equals(promotionType) ? promotionType : "";
+        this.promotionType = getPromotionType(promotionType);
+    }
+
+    private static String getPromotionType(final String promotionType) {
+        if (promotionType == null || "null".equals(promotionType)) {
+            return "";
+        }
+        return promotionType;
     }
 
     public String getName() {
